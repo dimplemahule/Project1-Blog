@@ -1,5 +1,3 @@
-//const jwt = require("jsonwebtoken");
-// const mongoose = require("mongoose");
 const blogModel = require("../models/bloggModel");
 const authorModel = require("../models/authorModel");
 
@@ -12,16 +10,15 @@ const createBlog = async (req, res) => {
       return res.status(400).send({ status: false, msg: "Data is required to create a Blog" });
     }
     if(!getData.title) return res.status(400).send({ status: false, msg: "Title of book is required" });
-    if(!getData.body) return res.status(400).send({ status: false, msg: "Description of book is required" });
+    if(!getData.body) return res.status(400).send({ status: false, msg: "Body of book is required" });
     if(!getData.authorId) return res.status(400).send({ status: false, msg: "Author ID is required" });
     if(!getData.category) return res.status(400).send({ status: false, msg: "Category of book is required" });
     
     let getAuthorData = await authorModel.findById(getData.authorId);
-    console.log(getAuthorData)
     if (!getAuthorData) return res.status(404).send({ status: false, msg: "No such author exist" });
 
     let showBlogData = await blogModel.create(getData);
-    res.status(201).send({ status: true, data: showBlogData });
+    res.status(201).send({ status: true, msg:' New blog created successfully', data: showBlogData });
   } catch (err) {
     res.status(500).send({ status: false, error: err.message });
   }
@@ -65,7 +62,7 @@ const putPublished = async function (req, res) {
     let decodeAuthorId =req.authorId;
 
     if (blogAuthor != decodeAuthorId) {
-      return res.status(403).send({ status:falase,msg: "you can't change the blog " })
+      return res.status(403).send({ status:false,msg: "you can't change the blog " })
     }
     let isDelet = blog.isDeleted;
     if (isDelet == true) {
@@ -108,12 +105,12 @@ const deleteBlogById = async (req, res) => {
     if (!blog) {
       return res.status(404).send({ status: "false", msg: "No such blog exists " })
     };
-    // let blogAuthor = blog.authorId
-    // let decodeAuthorId = req.authorId;
+    let blogAuthor = blog.authorId
+    let decodeAuthorId = req.authorId;
 
-    // if (blogAuthor != decodeAuthorId) {
-    //   return res.status(403).send({status:false, msg: "you can't change the blog " })
-    // }
+    if (blogAuthor != decodeAuthorId) {
+      return res.status(403).send({status:false, msg: "you can't change the blog " })
+    }
     if (!blogId) return res.status(400).send({ status: false, msg: "BlogId is required" })
 
     let data = await blogModel.findById(blogId);
